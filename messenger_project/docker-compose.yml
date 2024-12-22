@@ -1,0 +1,52 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: messenger_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+  consul:
+     image: hashicorp/consul:latest
+     ports:
+       - "8500:8500"
+       - "8600:8600/udp"
+     command: "agent -dev -client=0.0.0.0"
+  authservice:
+    build: ./auth_service
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgresql://user:password@db/messenger_db
+  messageservice:
+    build: ./message_service
+    ports:
+      - "5001:5001"
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgresql://user:password@db/messenger_db
+  mediaservice:
+    build: ./media_service
+    ports:
+      - "5002:5002"
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgresql://user:password@db/messenger_db
+  notificationservice:
+    build: ./notification_service
+    ports:
+      - "5003:5003"
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgresql://user:password@db/messenger_db
+volumes:
+  db_data:
