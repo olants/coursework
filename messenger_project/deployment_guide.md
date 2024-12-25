@@ -29,6 +29,7 @@ Deployment Guide
    - **MediaService:** http://localhost:5002
    - **NotificationService:** http://localhost:5003
    - **Consul UI:** http://localhost:8500
+   - **Load Balancer (HAProxy):** http://localhost:80
 
 6. **Database Access:**
    - Connect using pgAdmin, DBeaver, or another database client.
@@ -64,7 +65,13 @@ Deployment Guide
       curl --request POST \
       --url http://localhost:5000/register \
       --header 'Content-Type: application/json' \
-      --data '{"username": "testuser", "password": "testpass"}'
+      --data '{"username": "testuser", "email": "testuser@example.com", "password": "testpass"}'
+      ```
+    - Example test for MediaService file upload:
+      ```bash
+      curl --request POST \
+      --url http://localhost:5002/upload \
+      --form 'file=@/path/to/your/file.txt'
       ```
 
 11. **Scaling Services (Optional):**
@@ -90,3 +97,12 @@ Deployment Guide
       ```json
       {"status": "healthy"}
       ```
+
+13. **HAProxy Configuration:**
+    - HAProxy is configured as a load balancer and resolves services using Docker DNS.
+    - Configuration file: `haproxy.cfg`
+    - Example HAProxy logs can be monitored:
+      ```bash
+      docker logs <haproxy-container-id>
+      ```
+

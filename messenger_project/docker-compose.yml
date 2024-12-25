@@ -48,5 +48,16 @@ services:
       - db
     environment:
       DATABASE_URL: postgresql://user:password@db/messenger_db
+  load-balancer:
+    image: haproxy:2.6
+    ports:
+      - "80:80"
+    volumes:
+      - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+    depends_on:
+      - authservice
+      - messageservice
+      - mediaservice
+      - notificationservice
 volumes:
   db_data:

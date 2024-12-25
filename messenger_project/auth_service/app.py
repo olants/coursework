@@ -9,7 +9,7 @@ import requests
 app = Flask(__name__)
 app.config.from_object(Config)
 db.init_app(app)
-# db = SQLAlchemy(app)
+
 migrate = Migrate(app, db)
 app.register_blueprint(auth_routes)
 @app.route('/health', methods=['GET'])
@@ -32,4 +32,9 @@ if __name__ == '__main__':
         requests.put(consul_url, json=service_data)
     except Exception as e:
         print(f"Consul registration failed: {e}")
+
+    # Create tables explicitly (alternative for db.create_all())
+    with app.app_context():
+        db.create_all()  # Ensure tables are created during app startup
+                
     app.run(host='0.0.0.0', port=5000)

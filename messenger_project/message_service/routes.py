@@ -4,10 +4,20 @@ message_routes = Blueprint('message_routes', __name__)
 @message_routes.route('/send', methods=['POST'])
 def send():
     data = request.json
-    new_message = Message(sender=data['sender'], recipient=data['recipient'], content=data['content'])
+    
+    # Validate input
+    if not all(key in data for key in ['sender', 'recipient', 'content']):
+        return jsonify({'error': 'Missing required fields'}), 400
+
+    new_message = Message(
+        sender=data['sender'],
+        recipient=data['recipient'],
+        content=data['content']
+    )
     db.session.add(new_message)
     db.session.commit()
     return jsonify({'message': 'Message sent successfully'}), 201
+
 @message_routes.route('/receive', methods=['GET'])
 def receive():
     messages = Message.query.all()
